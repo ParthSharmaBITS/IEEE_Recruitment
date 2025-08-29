@@ -1,7 +1,4 @@
 n = int(input("Enter the number of lines you want the star pattern to be: "))
 
-i = 1
-
-while i<=n:
+for i in range(1, n + 1):
     print("*" * i)
-    i+=1
