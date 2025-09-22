@@ -1,0 +1,77 @@
+Q1: Why is the label an array of 10 elements instead of a number?
+
+We’re using one-hot encoding here. Instead of just saying “this image is class 3,” we represent it as a vector like [0, 0, 0, 1, 0, 0, 0, 0, 0, 0]. This format works better with cross entropy loss, which compares predicted probabilities with actual class probabilities. It also avoids implying any order between classes, which a plain number might accidentally suggest.
+
+Q2: Why convert to NumPy arrays?
+
+NumPy arrays are just way more efficient for numerical operations. They let us do matrix math, reshaping, slicing, and all the stuff we need for training. Lists are fine for collecting data, but once we start working with models, arrays are the way to go.
+
+Q3: Why are we doing X[:, :, :, 0] and what does this slicing result in?
+
+This line grabs just the first channel from each image. If the images are RGB, it’s basically taking the red channel. It simplifies the input by reducing the image from 3D to 2D, which is useful if color isn’t super important for classification.
+
+Q4: Why are we reshaping the data?
+
+Neural networks expect inputs as flat vectors, not 2D grids. So we reshape each image from 28×28 into a 784-length vector. This lets us feed it directly into the input layer, where each pixel becomes a separate input neuron.
+
+Q5: What is the learning rate?
+
+The learning rate controls how fast the model updates its weights. A small value means slow learning but more stability. A large value speeds things up but can overshoot. It’s basically how aggressively the model tries to learn from its mistakes.
+
+Q6: Why are the dimensions of the weights and biases the way they are?
+
+The dimensions are set up so that matrix multiplication works during the forward pass. For example, weights from input to hidden layer are shaped (hidden_neurons, input_neurons), so when we multiply them with the input vector, we get the right shape for the hidden layer. Same logic applies to biases and output weights.
+
+Q7: What is broadcasting and why do we need to broadcast the bias?
+
+Broadcasting lets us add arrays of different shapes without manually repeating values. When we add a bias vector to a batch of inputs, NumPy automatically stretches the bias across all columns. It keeps the code clean and avoids unnecessary loops.
+
+Q8: What is np.random.randn and what's the shape of this matrix?
+
+`np.random.randn(a, b)` gives us a matrix of shape (a, b) filled with random values from a normal distribution. We use it to initialize weights. Multiplying by `np.sqrt(2/input_neurons)` is called He initialization—it helps keep gradients stable during training, especially with ReLU.
+
+Q9: What are activation functions and why do we need them?
+
+Activation functions add non-linearity to the network. Without them, no matter how many layers we stack, the model would behave like a linear function. ReLU and sigmoid help the network learn complex patterns and make decisions that go beyond simple math.
+
+Q10: What is the softmax function and why do we need it?
+
+Softmax turns raw scores into probabilities that sum to 1. It’s used in the output layer so the model can express confidence in each class. This makes it easier to interpret predictions and works well with cross entropy loss.
+
+Q11: What are loss functions and why do we need them?
+
+Loss functions measure how wrong the model’s predictions are. They guide the training process by telling the model how to adjust its weights. For classification, cross entropy is ideal because it penalizes confident wrong predictions more than mean squared error.
+
+Q12: Why is the output an array of 10 elements per image?
+
+Each image belongs to one of 10 classes. The model outputs a probability for each class, forming a 10-element vector. This lets the model express uncertainty and works well with one-hot encoded labels and softmax.
+
+Q13: Why are we subtracting the mean of the inputs?
+
+Subtracting the mean centers the data around zero. This helps stabilize training and makes gradient descent more efficient. It’s a basic form of normalization that improves convergence.
+
+Q14: Why are we using the softmax function here?
+
+Softmax converts raw scores into probabilities. It’s perfect for multi-class classification because it gives us a clear prediction and works well with cross entropy loss.
+
+Q15: Why are we doing a forward pass here instead of just using the outputs from the forward function?
+
+In backprop, we need intermediate values like hidden layer outputs to compute gradients. The forward function only gives the final output, so we redo the forward pass inside backprop to get everything we need for weight updates.
+
+Q16: What is the validation dataset and what do we mean by generalization?
+
+The validation set is data the model hasn’t seen during training. It’s used to check how well the model performs on new inputs. Generalization means the model isn’t just memorizing—it’s actually learning patterns that apply to unseen data.
+
+Q17: What are the parameters in the model and what do they mean?
+
+- `input_neurons`: Number of features per input (784 for 28×28 images).
+- `hidden_neurons`: Number of neurons in the hidden layer—controls model complexity.
+- `output_neurons`: Number of classes (10 for Fashion MNIST).
+- `learning_rate`: Controls how fast the model learns.
+- `epochs`: Number of times the model sees the entire training set.
+
+These define the structure and behavior of the network. Tuning them affects accuracy, training speed, and generalization.
+
+Q18: Why are we using argmax here and why is this output different from the model’s output?
+
+The model outputs a probability distribution over 10 classes. `np.argmax` picks the index of the highest probability, converting it into a class label. We use this to compare predictions with actual labels and calculate accuracy.
